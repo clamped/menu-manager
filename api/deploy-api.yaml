@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  GetRecipe:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: get-recipe.handler
+      Runtime: nodejs6.10
+      Environment:
+        Variables: 
+          S3_BUCKET: menu-manager-api
+  AddRecipe:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: add-recipe.handler
+      Runtime: nodejs6.10
+      Environment:
+        Variables: 
+          S3_BUCKET: menu-manager-api
+  UpdateRecipe:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: update-recipe.handler
+      Runtime: nodejs6.10
+      Environment:
+        Variables: 
+          S3_BUCKET: menu-manager-api
+  RemoveRecipe:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: remove-recipe.handler
+      Runtime: nodejs6.10
+      Environment:
+        Variables: 
+          S3_BUCKET: menu-manager-api
