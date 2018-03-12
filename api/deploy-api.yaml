@@ -6,30 +6,60 @@ Resources:
     Properties:
       Handler: get-recipe.handler
       Runtime: nodejs6.10
+      Policies: AmazonDynamoDBReadOnlyAccess
       Environment:
-        Variables: 
-          S3_BUCKET: menu-manager-api
+        Variables:
+          TABLE_NAME: !Ref RecipeTable
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /recipe/{recipeId}
+            Method: get
   AddRecipe:
     Type: AWS::Serverless::Function
     Properties:
       Handler: add-recipe.handler
       Runtime: nodejs6.10
+      Policies: AmazonDynamoDBFullAccess
       Environment:
-        Variables: 
-          S3_BUCKET: menu-manager-api
+        Variables:
+          TABLE_NAME: !Ref RecipeTable
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /recipe
+            Method: put
   UpdateRecipe:
     Type: AWS::Serverless::Function
     Properties:
       Handler: update-recipe.handler
       Runtime: nodejs6.10
+      Policies: AmazonDynamoDBFullAccess
       Environment:
-        Variables: 
-          S3_BUCKET: menu-manager-api
+        Variables:
+          TABLE_NAME: !Ref RecipeTable
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /recipe/{recipeId}
+            Method: post
   RemoveRecipe:
     Type: AWS::Serverless::Function
     Properties:
       Handler: remove-recipe.handler
       Runtime: nodejs6.10
+      Policies: AmazonDynamoDBFullAccess
       Environment:
-        Variables: 
-          S3_BUCKET: menu-manager-api
+        Variables:
+          TABLE_NAME: !Ref RecipeTable
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /recipe/{recipeId}
+            Method: delete
+  RecipeTable:
+      Type: AWS::Serverless::SimpleTable
