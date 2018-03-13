@@ -3,6 +3,7 @@
 /api/node_modules
 
 api/serverless-api-output.yaml
+api/menu-manager-api.zip
 
 # testing
 /coverage

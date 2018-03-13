@@ -4,9 +4,10 @@ Resources:
   GetRecipe:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: get-recipe.handler
+      Handler: index.getRecipe
       Runtime: nodejs6.10
       Policies: AmazonDynamoDBReadOnlyAccess
+      CodeUri: s3://menu-manager-api/menu-manager-api.zip
       Environment:
         Variables:
           TABLE_NAME: !Ref RecipeTable
@@ -19,9 +20,10 @@ Resources:
   AddRecipe:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: add-recipe.handler
+      Handler: index.addRecipe
       Runtime: nodejs6.10
       Policies: AmazonDynamoDBFullAccess
+      CodeUri: s3://menu-manager-api/menu-manager-api.zip
       Environment:
         Variables:
           TABLE_NAME: !Ref RecipeTable
@@ -34,9 +36,10 @@ Resources:
   UpdateRecipe:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: update-recipe.handler
+      Handler: index.updateRecipe
       Runtime: nodejs6.10
       Policies: AmazonDynamoDBFullAccess
+      CodeUri: s3://menu-manager-api/menu-manager-api.zip
       Environment:
         Variables:
           TABLE_NAME: !Ref RecipeTable
@@ -49,9 +52,10 @@ Resources:
   RemoveRecipe:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: remove-recipe.handler
+      Handler: index.deleteRecipe
       Runtime: nodejs6.10
       Policies: AmazonDynamoDBFullAccess
+      CodeUri: s3://menu-manager-api/menu-manager-api.zip
       Environment:
         Variables:
           TABLE_NAME: !Ref RecipeTable
