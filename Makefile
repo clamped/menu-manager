@@ -1,4 +1,7 @@
-.PHONY: deploy-api
+.PHONY: clean deploy-api
 
-deploy-api:
+clean:
+	rm -rf api/target
+
+deploy-api: clean
 	./api/deploy-api.sh

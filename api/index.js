@@ -9,7 +9,7 @@ const tableName = process.env.TABLE_NAME;
 const createResponse = (statusCode, body) => {
   return {
     statusCode: statusCode,
-    body: body
+    body: JSON.stringify(body).trim()
   }
 };
 
@@ -28,10 +28,27 @@ exports.getRecipe = (event, context, callback) => {
       callback(null, createResponse(404, "ITEM NOT FOUND"));
       return;
     }
-    console.log(`RETRIEVED ITEM SUCCESSFULLY WITH doc = ${data.Item.doc}`);
+    console.log(`RETRIEVED ITEM SUCCESSFULLY WITH doc = ${JSON.stringify(data.Item.doc)}`);
     callback(null, createResponse(200, data.Item.doc));
   }).catch((err) => {
     console.log(`GET ITEM FAILED FOR doc = ${params.Key.id}, WITH ERROR: ${err}`);
+    callback(null, createResponse(500, err));
+  });
+};
+
+exports.getAllRecipes = (event, context, callback) => {
+  let params = {
+    TableName: tableName
+  };
+
+  let dbScan = (params) => { return dynamo.scan(params).promise() };
+
+  dbScan(params).then((data) => {
+    console.log(`RETRIEVED ${data.Count} ITEMS SUCCESSFULLY: ${JSON.stringify(data.Items)}`);
+    
+    callback(null, createResponse(200, data.Items));
+  }).catch((err) => {
+    console.log(`GET ITEMS FAILED WITH ERROR: ${err}`);
     callback(null, createResponse(500, err));
   });
 };

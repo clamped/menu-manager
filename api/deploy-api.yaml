@@ -1,13 +1,13 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Resources:
-  GetRecipe:
+  GetAllRecipes:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: index.getRecipe
+      Handler: index.getAllRecipes
       Runtime: nodejs6.10
       Policies: AmazonDynamoDBReadOnlyAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api.zip
+      CodeUri: s3://menu-manager-api/menu-manager-api-1522493500.zip
       Environment:
         Variables:
           TABLE_NAME: !Ref RecipeTable
@@ -15,7 +15,23 @@ Resources:
         GetResource:
           Type: Api
           Properties:
-            Path: /recipe/{recipeId}
+            Path: /recipes
+            Method: get
+  GetRecipe:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.getRecipe
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBReadOnlyAccess
+      CodeUri: s3://menu-manager-api/menu-manager-api-1522493500.zip
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref RecipeTable
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /recipes/{recipeId}
             Method: get
   AddRecipe:
     Type: AWS::Serverless::Function
@@ -23,7 +39,7 @@ Resources:
       Handler: index.addRecipe
       Runtime: nodejs6.10
       Policies: AmazonDynamoDBFullAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api.zip
+      CodeUri: s3://menu-manager-api/menu-manager-api-1522493500.zip
       Environment:
         Variables:
           TABLE_NAME: !Ref RecipeTable
@@ -31,7 +47,7 @@ Resources:
         GetResource:
           Type: Api
           Properties:
-            Path: /recipe
+            Path: /recipes
             Method: put
   UpdateRecipe:
     Type: AWS::Serverless::Function
@@ -39,7 +55,7 @@ Resources:
       Handler: index.updateRecipe
       Runtime: nodejs6.10
       Policies: AmazonDynamoDBFullAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api.zip
+      CodeUri: s3://menu-manager-api/menu-manager-api-1522493500.zip
       Environment:
         Variables:
           TABLE_NAME: !Ref RecipeTable
@@ -47,7 +63,7 @@ Resources:
         GetResource:
           Type: Api
           Properties:
-            Path: /recipe/{recipeId}
+            Path: /recipes/{recipeId}
             Method: post
   RemoveRecipe:
     Type: AWS::Serverless::Function
@@ -55,7 +71,7 @@ Resources:
       Handler: index.deleteRecipe
       Runtime: nodejs6.10
       Policies: AmazonDynamoDBFullAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api.zip
+      CodeUri: s3://menu-manager-api/menu-manager-api-1522493500.zip
       Environment:
         Variables:
           TABLE_NAME: !Ref RecipeTable
@@ -63,7 +79,7 @@ Resources:
         GetResource:
           Type: Api
           Properties:
-            Path: /recipe/{recipeId}
+            Path: /recipes/{recipeId}
             Method: delete
   RecipeTable:
       Type: AWS::Serverless::SimpleTable
