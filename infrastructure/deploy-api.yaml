@@ -7,7 +7,7 @@ Resources:
       Handler: index.getAllRecipes
       Runtime: nodejs6.10
       Policies: AmazonDynamoDBReadOnlyAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api-1522493500.zip
+      CodeUri: s3://menu-manager-api/menu-manager-api-1549202100.zip
       Environment:
         Variables:
           TABLE_NAME: !Ref RecipeTable
@@ -23,7 +23,7 @@ Resources:
       Handler: index.getRecipe
       Runtime: nodejs6.10
       Policies: AmazonDynamoDBReadOnlyAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api-1522493500.zip
+      CodeUri: s3://menu-manager-api/menu-manager-api-1549202100.zip
       Environment:
         Variables:
           TABLE_NAME: !Ref RecipeTable
@@ -39,7 +39,7 @@ Resources:
       Handler: index.addRecipe
       Runtime: nodejs6.10
       Policies: AmazonDynamoDBFullAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api-1522493500.zip
+      CodeUri: s3://menu-manager-api/menu-manager-api-1549202100.zip
       Environment:
         Variables:
           TABLE_NAME: !Ref RecipeTable
@@ -55,7 +55,7 @@ Resources:
       Handler: index.updateRecipe
       Runtime: nodejs6.10
       Policies: AmazonDynamoDBFullAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api-1522493500.zip
+      CodeUri: s3://menu-manager-api/menu-manager-api-1549202100.zip
       Environment:
         Variables:
           TABLE_NAME: !Ref RecipeTable
@@ -71,7 +71,7 @@ Resources:
       Handler: index.deleteRecipe
       Runtime: nodejs6.10
       Policies: AmazonDynamoDBFullAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api-1522493500.zip
+      CodeUri: s3://menu-manager-api/menu-manager-api-1549202100.zip
       Environment:
         Variables:
           TABLE_NAME: !Ref RecipeTable
