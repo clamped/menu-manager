@@ -1,0 +1,14 @@
+CREATE TABLE recipe_tags (
+    recipeId VARCHAR(255) NOT NULL,
+    tag VARCHAR(25) NOT NULL,
+    
+    createdTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updatedTime TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY(recipeId, tag),
+    INDEX(recipeId),
+
+    FOREIGN KEY (recipeId)
+        REFERENCES recipe(id)
+        ON DELETE CASCADE
+);
