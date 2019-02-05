@@ -2,9 +2,6 @@
 
 var AWS = require('aws-sdk');
 var uuid = require('uuid');
-const dynamo = new AWS.DynamoDB.DocumentClient();
-
-const tableName = process.env.TABLE_NAME;
 
 const createResponse = (statusCode, body) => {
   return {

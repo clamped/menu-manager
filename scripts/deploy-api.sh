@@ -3,8 +3,8 @@
 set -ex
 
 NOW=`date +%s`
-ZIP_NAME=menu-manager-api-$NOW.zip
-S3_BUCKET=menu-manager-api
+ZIP_NAME=menu-wizard-api-$NOW.zip
+S3_BUCKET=menu-wizard-api
 INFRA_TEMPLATE=infrastructure/deploy-api.yaml
 OUTPUT_TEMPLATE=target/serverless-api-output.yaml
 
@@ -26,11 +26,11 @@ gsed -i "s/CodeUri:.*/CodeUri: s3:\/\/${S3_BUCKET}\/${ZIP_NAME}/g" $INFRA_TEMPLA
 aws cloudformation package \
     --template-file $INFRA_TEMPLATE \
     --output-template-file $OUTPUT_TEMPLATE \
-    --s3-bucket menu-manager-api
+    --s3-bucket menu-wizard-api
 
 aws cloudformation deploy \
    --template-file $OUTPUT_TEMPLATE \
-   --stack-name menu-manager-api \
+   --stack-name menu-wizard-api \
    --capabilities CAPABILITY_IAM
 
 exit 0

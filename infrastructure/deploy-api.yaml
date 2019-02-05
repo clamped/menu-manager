@@ -5,12 +5,14 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.getAllRecipes
-      Runtime: nodejs6.10
-      Policies: AmazonDynamoDBReadOnlyAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api-1549202100.zip
+      Runtime: nodejs8.10
+      Role: !GetAtt ParameterStoreMenuWizardApiFunctionsRole.Arn 
+      CodeUri: s3://menu-wizard-api/menu-wizard-api-1549305131.zip
+      Tracing: 'Active'
       Environment:
         Variables:
-          TABLE_NAME: !Ref RecipeTable
+          APP_CONFIG_PATH: 'menuwizard'
+          AWS_XRAY_TRACING_NAME: 'MenuWizardApiGetAllRecipes'
       Events:
         GetResource:
           Type: Api
@@ -21,12 +23,14 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.getRecipe
-      Runtime: nodejs6.10
-      Policies: AmazonDynamoDBReadOnlyAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api-1549202100.zip
+      Runtime: nodejs8.10
+      Role: !GetAtt ParameterStoreMenuWizardApiFunctionsRole.Arn 
+      CodeUri: s3://menu-wizard-api/menu-wizard-api-1549305131.zip
+      Tracing: 'Active'
       Environment:
         Variables:
-          TABLE_NAME: !Ref RecipeTable
+          APP_CONFIG_PATH: 'menuwizard'
+          AWS_XRAY_TRACING_NAME: 'MenuWizardApiGetRecipe'
       Events:
         GetResource:
           Type: Api
@@ -37,12 +41,14 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.addRecipe
-      Runtime: nodejs6.10
-      Policies: AmazonDynamoDBFullAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api-1549202100.zip
+      Runtime: nodejs8.10
+      Role: !GetAtt ParameterStoreMenuWizardApiFunctionsRole.Arn 
+      CodeUri: s3://menu-wizard-api/menu-wizard-api-1549305131.zip
+      Tracing: 'Active'
       Environment:
         Variables:
-          TABLE_NAME: !Ref RecipeTable
+          APP_CONFIG_PATH: 'menuwizard'
+          AWS_XRAY_TRACING_NAME: 'MenuWizardApiAddRecipe'
       Events:
         GetResource:
           Type: Api
@@ -53,12 +59,14 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.updateRecipe
-      Runtime: nodejs6.10
-      Policies: AmazonDynamoDBFullAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api-1549202100.zip
+      Runtime: nodejs8.10
+      Role: !GetAtt ParameterStoreMenuWizardApiFunctionsRole.Arn 
+      CodeUri: s3://menu-wizard-api/menu-wizard-api-1549305131.zip
+      Tracing: 'Active'
       Environment:
         Variables:
-          TABLE_NAME: !Ref RecipeTable
+          APP_CONFIG_PATH: 'menuwizard'
+          AWS_XRAY_TRACING_NAME: 'MenuWizardApiUpdateRecipe'
       Events:
         GetResource:
           Type: Api
@@ -69,17 +77,55 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.deleteRecipe
-      Runtime: nodejs6.10
-      Policies: AmazonDynamoDBFullAccess
-      CodeUri: s3://menu-manager-api/menu-manager-api-1549202100.zip
+      Runtime: nodejs8.10
+      Role: !GetAtt ParameterStoreMenuWizardApiFunctionsRole.Arn 
+      CodeUri: s3://menu-wizard-api/menu-wizard-api-1549305131.zip
+      Tracing: 'Active'
       Environment:
         Variables:
-          TABLE_NAME: !Ref RecipeTable
+          APP_CONFIG_PATH: 'menuwizard'
+          AWS_XRAY_TRACING_NAME: 'MenuWizardApiRemoveRecipe'
       Events:
         GetResource:
           Type: Api
           Properties:
             Path: /recipes/{recipeId}
             Method: delete
-  RecipeTable:
-      Type: AWS::Serverless::SimpleTable
+  ParameterStoreMenuWizardApiFunctionsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - 'lambda.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      Policies:
+        -
+          PolicyName: 'ParameterStoreMenuWizardParameterAccess'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                  - 'ssm:GetParameter*'
+                Resource: !Sub 'arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/menuwizard*'
+        -
+          PolicyName: 'ParameterStoreMenuWizardXRayAccess'
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                  - 'xray:PutTraceSegments'
+                  - 'xray:PutTelemetryRecords'
+                Resource: '*'
+
