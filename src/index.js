@@ -1,6 +1,5 @@
 'use strict';
 
-var AWS = require('aws-sdk');
 var uuid = require('uuid');
 
 const createResponse = (statusCode, body) => {

@@ -17,7 +17,7 @@ mkdir target
 
 yarn install
 
-zip -r target/$ZIP_NAME src/index.js node_modules/**
+zip -r target/$ZIP_NAME src/** node_modules/**
 
 aws s3 cp target/$ZIP_NAME s3://$S3_BUCKET/$ZIP_NAME
 
