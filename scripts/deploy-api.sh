@@ -8,8 +8,6 @@ S3_BUCKET=menu-wizard-api
 INFRA_TEMPLATE=infrastructure/deploy-api.yaml
 OUTPUT_TEMPLATE=target/serverless-api-output.yaml
 
-pushd $(pwd)
-
 command -v aws || { echo "I require aws but it's not installed. Aborting." >&2; exit 1; }
 command -v gsed || { echo "I require gsed but it's not installed. Aborting." >&2; exit 1; }
 

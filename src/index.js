@@ -1,6 +1,9 @@
 'use strict';
 
 var uuid = require('uuid');
+var mysql = require('mysql');
+var AWS = require('aws-sdk');
+var ssm = new AWS.SSM();
 
 const createResponse = (statusCode, body) => {
   return {
@@ -10,109 +13,80 @@ const createResponse = (statusCode, body) => {
 };
 
 exports.getRecipe = (event, context, callback) => {
-  let params = {
-    TableName: tableName,
-    Key: {
-      id: event.pathParameters.recipeId
-    }
+  console.log("getRecipe");
+
+  var params = {
+    Names: ['menuwizard-db-host','menuwizard-db-username','menuwizard-db-password'],
+    WithDecryption: true
   };
 
-  let dbGet = (params) => { return dynamo.get(params).promise() };
+  console.log(`params: ${params}`);
 
-  dbGet(params).then((data) => {
-    if (!data.Item) {
-      callback(null, createResponse(404, "ITEM NOT FOUND"));
-      return;
+  ssm.getParameters(params, (err, data) => {
+    if (err) {
+      console.log(err, err.stack);
+    } else {
+      console.log(data);
+      callback(null, createResponse(200, data));
     }
-    console.log(`RETRIEVED ITEM SUCCESSFULLY WITH doc = ${JSON.stringify(data.Item.doc)}`);
-    callback(null, createResponse(200, data.Item.doc));
-  }).catch((err) => {
-    console.log(`GET ITEM FAILED FOR doc = ${params.Key.id}, WITH ERROR: ${err}`);
-    callback(null, createResponse(500, err));
   });
 };
 
 exports.getAllRecipes = (event, context, callback) => {
-  let params = {
-    TableName: tableName
+  console.log("getAllRecipes");
+
+  var params = {
+    Names: ['menuwizard-db-host','menuwizard-db-username','menuwizard-db-password'],
+    WithDecryption: true
   };
 
-  let dbScan = (params) => { return dynamo.scan(params).promise() };
+  console.log(`params: ${params}`);
 
-  dbScan(params).then((data) => {
-    console.log(`RETRIEVED ${data.Count} ITEMS SUCCESSFULLY: ${JSON.stringify(data.Items)}`);
-    
-    callback(null, createResponse(200, data.Items));
-  }).catch((err) => {
-    console.log(`GET ITEMS FAILED WITH ERROR: ${err}`);
-    callback(null, createResponse(500, err));
+  var secrets;
+  ssm.getParameters(params, (err, data) => {
+    if (err) {
+      console.log(err, err.stack);
+      createResponse(500, {});
+    } else {
+      console.log(JSON.stringify(data));
+      secrets = Object.assign({}, ...data.Parameters.map(nvp => ({[nvp['Name']]: nvp['Value']})));
+
+      console.log(`secrets: ${JSON.stringify(secrets)}`);
+
+      var connection = mysql.createConnection({
+        host     : secrets['menuwizard-db-host'],
+        user     : secrets['menuwizard-db-username'],
+        password : secrets['menuwizard-db-password'],
+        database : 'menuwizard'
+      });
+       
+      connection.connect();
+       
+      var sol;
+      connection.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
+        if (error) {
+          connection.end();
+          throw error;
+        }
+        sol = results[0].solution;
+        console.log('The solution is: ', results[0].solution);
+        connection.end();
+        createResponse(200, sol);
+      });
+    }
   });
 };
 
 exports.addRecipe = (event, context, callback) => {
-  let item = {
-    id: uuid.v1(),
-    doc: event.body
-  };
+  console.log("addRecipe");
 
-  let params = {
-    TableName: tableName,
-    Item: item
-  };
-
-  let dbPut = (params) => { return dynamo.put(params).promise() };
-
-  dbPut(params).then((data) => {
-    console.log(`PUT ITEM SUCCEEDED WITH doc = ${item.doc}`);
-    callback(null, createResponse(201, null));
-  }).catch((err) => {
-    console.log(`PUT ITEM FAILED FOR doc = ${item.doc}, WITH ERROR: ${err}`);
-    callback(null, createResponse(500, err));
-  });
 };
 
 exports.updateRecipe = (event, context, callback) => {
-  let item = {
-    id: event.pathParameters.recipeId,
-    doc: event.body
-  };
+  console.log("updateRecipe");
 
-  let params = {
-    TableName: tableName,
-    Item: item
-  };
-
-  let dbUpdate = (params) => { return dynamo.update(params).promise() };
-
-  dbUpdate(params).then((data) => {
-    console.log(`UPDATE ITEM SUCCEEDED WITH doc = ${item.doc}`);
-    callback(null, createResponse(200, null));
-  }).catch((err) => {
-    console.log(`UPDATE ITEM FAILED FOR doc = ${item.doc}, WITH ERROR: ${err}`);
-    callback(null, createResponse(500, err));
-  });
 };
 
 exports.deleteRecipe = (event, context, callback) => {
-  let params = {
-    TableName: tableName,
-    Key: {
-      id: event.pathParameters.recipeId
-    },
-    ReturnValues: 'ALL_OLD'
-  };
-
-  let dbDelete = (params) => { return dynamo.delete(params).promise() };
-
-  dbDelete(params).then((data) => {
-    if (!data.Attributes) {
-      callback(null, createResponse(404, "ITEM NOT FOUND FOR DELETION"));
-      return;
-    }
-    console.log(`DELETED ITEM SUCCESSFULLY WITH id = ${event.pathParameters.recipeId}`);
-    callback(null, createResponse(200, null));
-  }).catch((err) => {
-    console.log(`DELETE ITEM FAILED FOR id = ${event.pathParameters.recipeId}, WITH ERROR: ${err}`);
-    callback(null, createResponse(500, err));
-  });
+  console.log("deleteRecipe");
 };
